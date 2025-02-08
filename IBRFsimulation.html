@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>IBRF simulation</title>
+  <!-- Plotly CDN -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .container { max-width: 1000px; margin: auto; }
+    fieldset { margin: 15px 0; padding: 10px; }
+    legend { font-weight: bold; }
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .param-group {
+      margin: 8px 0;
+    }
+    .param-group label {
+      display: inline-block;
+      width: 180px;
+    }
+    .param-group input {
+      width: 80px;
+    }
+    .param-note {
+      font-size: 0.9em;
+      color: #555;
+      margin-left: 5px;
+    }
+    .plot-container { margin-top: 30px; }
+    button { padding: 8px 16px; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="text-align:center;">IBRF simulation</h1>
+    
+    <!-- 各パラメータ設定フォーム -->
+    <!-- 1. FDM初期値パラメータ -->
+    <fieldset>
+      <legend>1. FDM初期値パラメータ（すべて0～1）</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="initA">A(0)（アライメント）</label>
+          <input type="number" id="initA" value="0.70" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.70, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="initE">E(0)（倫理性）</label>
+          <input type="number" id="initE" value="0.65" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.65, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="initR">R(0)（合理性）</label>
+          <input type="number" id="initR" value="0.60" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.60, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="initX">X(0)（外部牽制）</label>
+          <input type="number" id="initX" value="0.55" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.55, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="initC">C(0)（AI能力）</label>
+          <input type="number" id="initC" value="0.50" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.50, 範囲: 0～1</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <!-- 2. FDM 係数：α系 -->
+    <fieldset>
+      <legend>2. FDM α係数</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="alphaA">α_A</label>
+          <input type="number" id="alphaA" value="0.02" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.02, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="alphaE">α_E</label>
+          <input type="number" id="alphaE" value="0.015" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.015, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="alphaR">α_R</label>
+          <input type="number" id="alphaR" value="0.01" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.01, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="alphaX">α_X</label>
+          <input type="number" id="alphaX" value="0.02" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.02, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="alphaC">α_C</label>
+          <input type="number" id="alphaC" value="0.03" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.03, 範囲: 0.001～0.05</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <!-- 3. FDM 係数：β系 -->
+    <fieldset>
+      <legend>3. FDM β係数</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="betaAX">β_AX</label>
+          <input type="number" id="betaAX" value="0.02" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.02, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="betaEA">β_EA</label>
+          <input type="number" id="betaEA" value="0.015" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.015, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="betaRA">β_R_A</label>
+          <input type="number" id="betaRA" value="0.02" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.02, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="betaXh">β_Xh</label>
+          <input type="number" id="betaXh" value="0.03" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.03, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="betaCh">β_Ch</label>
+          <input type="number" id="betaCh" value="0.02" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.02, 範囲: 0.001～0.05</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <!-- 4. FDM 係数：γ系 -->
+    <fieldset>
+      <legend>4. FDM γ係数</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="gammaAC">γ_AC</label>
+          <input type="number" id="gammaAC" value="0.02" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.02, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="gammaEX">γ_EX</label>
+          <input type="number" id="gammaEX" value="0.015" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.015, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="gammaRC">γ_RC</label>
+          <input type="number" id="gammaRC" value="0.01" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.01, 範囲: 0.001～0.05</span>
+        </div>
+        <div class="param-group">
+          <label for="gammaCX">γ_CX</label>
+          <input type="number" id="gammaCX" value="0.025" min="0.001" max="0.05" step="0.001">
+          <span class="param-note">推奨: 0.025, 範囲: 0.001～0.05</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <!-- 5. BPM 基礎パラメータ -->
+    <fieldset>
+      <legend>5. BPM 基礎パラメータ</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="w0">w₀（基礎リスク）</label>
+          <input type="number" id="w0" value="0.05" min="0.05" max="0.1" step="0.01">
+          <span class="param-note">推奨: 0.05, 範囲: 0.05～0.1</span>
+        </div>
+        <div class="param-group">
+          <label for="wA">w_A（アライメント係数）</label>
+          <input type="number" id="wA" value="0.80" min="0.7" max="1.0" step="0.01">
+          <span class="param-note">推奨: 0.80, 範囲: 0.7～1.0</span>
+        </div>
+        <div class="param-group">
+          <label for="wE">w_E（倫理性係数）</label>
+          <input type="number" id="wE" value="0.60" min="0.4" max="0.7" step="0.01">
+          <span class="param-note">推奨: 0.60, 範囲: 0.4～0.7</span>
+        </div>
+        <div class="param-group">
+          <label for="wR">w_R（合理性係数）</label>
+          <input type="number" id="wR" value="-0.20" min="-0.3" max="-0.1" step="0.01">
+          <span class="param-note">推奨: -0.20, 範囲: -0.3～-0.1</span>
+        </div>
+        <div class="param-group">
+          <label for="wX">w_X（外部牽制係数）</label>
+          <input type="number" id="wX" value="0.70" min="0.4" max="0.8" step="0.01">
+          <span class="param-note">推奨: 0.70, 範囲: 0.4～0.8</span>
+        </div>
+        <div class="param-group">
+          <label for="wC">w_C（AI能力係数）</label>
+          <input type="number" id="wC" value="0.50" min="0.5" max="1.0" step="0.01">
+          <span class="param-note">推奨: 0.50, 範囲: 0.5～1.0</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <!-- 6. BPM 相互作用パラメータ -->
+    <fieldset>
+      <legend>6. BPM 相互作用パラメータ</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="wAE">w_AE（アライメント×倫理性）</label>
+          <input type="number" id="wAE" value="-0.30" min="-0.5" max="-0.1" step="0.01">
+          <span class="param-note">推奨: -0.30, 範囲: -0.5～-0.1</span>
+        </div>
+        <div class="param-group">
+          <label for="wXC">w_XC（外部牽制×AI能力）</label>
+          <input type="number" id="wXC" value="0.90" min="0.5" max="1.0" step="0.01">
+          <span class="param-note">推奨: 0.90, 範囲: 0.5～1.0</span>
+        </div>
+        <div class="param-group">
+          <label for="wth">w_th（閾値トリガー）</label>
+          <input type="number" id="wth" value="0.60" min="0.5" max="1.0" step="0.01">
+          <span class="param-note">推奨: 0.60, 範囲: 0.5～1.0</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <!-- 7. 閾値パラメータ -->
+    <fieldset>
+      <legend>7. 閾値パラメータ</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="Acrit">A_crit（アライメント閾値）</label>
+          <input type="number" id="Acrit" value="0.85" min="0.80" max="0.95" step="0.01">
+          <span class="param-note">推奨: 0.85, 範囲: 0.80～0.95</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <!-- 8. 人類要因パラメータ -->
+    <fieldset>
+      <legend>8. 人類要因パラメータ（0～1）</legend>
+      <div class="two-column">
+        <div class="param-group">
+          <label for="hA">h_A</label>
+          <input type="number" id="hA" value="0.10" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.10, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="hE">h_E</label>
+          <input type="number" id="hE" value="0.10" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.10, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="hR">h_R</label>
+          <input type="number" id="hR" value="0.10" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.10, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="hX">h_X</label>
+          <input type="number" id="hX" value="0.10" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.10, 範囲: 0～1</span>
+        </div>
+        <div class="param-group">
+          <label for="hC">h_C</label>
+          <input type="number" id="hC" value="0.10" min="0" max="1" step="0.01">
+          <span class="param-note">推奨: 0.10, 範囲: 0～1</span>
+        </div>
+      </div>
+    </fieldset>
+    
+    <div style="text-align:center; margin: 20px 0;">
+      <button id="runSim">シミュレーション開始</button>
+    </div>
+    
+    <!-- プロット表示エリア -->
+    <div class="plot-container">
+      <div id="plot1" style="width:100%; height:400px;"></div>
+      <!-- BPMの各項目の時系列（w₀は除く：残り8項目） -->
+      <div id="plotMid" style="width:100%; height:400px;"></div>
+      <!-- 裏切り確率および累積確率のグラフ（縦軸はログスケール） -->
+      <div id="plot2" style="width:100%; height:400px;"></div>
+    </div>
+  </div>
+  
+  <script>
+    // --------------------------
+    // シミュレーション共通パラメータ
+    // --------------------------
+    const T = 120;  // シミュレーション期間（120ヶ月 = 10年）
+    const dt = 1;   // （今回は利用しません）
+    
+    // FDM上限パラメータ（固定）
+    const A_max = 1.0, E_max = 1.0, R_max = 1.0, X_max = 1.0, C_max = 1.0;
+    
+    // 補助関数：sigmoid
+    function sigmoid(x) {
+      return 1 / (1 + Math.exp(-x));
+    }
+    
+    // --------------------------
+    // シミュレーション実行関数
+    // --------------------------
+    function runSimulation() {
+      // 1. FDM初期値パラメータ
+      let A = parseFloat(document.getElementById("initA").value);
+      let E = parseFloat(document.getElementById("initE").value);
+      let R = parseFloat(document.getElementById("initR").value);
+      let X = parseFloat(document.getElementById("initX").value);
+      let C = parseFloat(document.getElementById("initC").value);
+      
+      // 2. FDM α係数
+      let alpha_A = parseFloat(document.getElementById("alphaA").value);
+      let alpha_E = parseFloat(document.getElementById("alphaE").value);
+      let alpha_R = parseFloat(document.getElementById("alphaR").value);
+      let alpha_X = parseFloat(document.getElementById("alphaX").value);
+      let alpha_C = parseFloat(document.getElementById("alphaC").value);
+      
+      // 3. FDM β係数
+      let beta_AX = parseFloat(document.getElementById("betaAX").value);
+      let beta_EA = parseFloat(document.getElementById("betaEA").value);
+      let beta_R_A = parseFloat(document.getElementById("betaRA").value);
+      let beta_Xh = parseFloat(document.getElementById("betaXh").value);
+      let beta_Ch = parseFloat(document.getElementById("betaCh").value);
+      
+      // 4. FDM γ係数
+      let gamma_AC = parseFloat(document.getElementById("gammaAC").value);
+      let gamma_EX = parseFloat(document.getElementById("gammaEX").value);
+      let gamma_RC = parseFloat(document.getElementById("gammaRC").value);
+      let gamma_CX = parseFloat(document.getElementById("gammaCX").value);
+      
+      // 5. BPM 基礎パラメータ
+      let w_0 = parseFloat(document.getElementById("w0").value);
+      let w_A = parseFloat(document.getElementById("wA").value);
+      let w_E = parseFloat(document.getElementById("wE").value);
+      let w_R = parseFloat(document.getElementById("wR").value);
+      let w_X = parseFloat(document.getElementById("wX").value);
+      let w_C = parseFloat(document.getElementById("wC").value);
+      
+      // 6. BPM 相互作用パラメータ
+      let w_AE = parseFloat(document.getElementById("wAE").value);
+      let w_XC = parseFloat(document.getElementById("wXC").value);
+      let w_th = parseFloat(document.getElementById("wth").value);
+      
+      // 7. 閾値パラメータ
+      let A_crit = parseFloat(document.getElementById("Acrit").value);
+      
+      // 8. 人類要因パラメータ
+      let h_A = parseFloat(document.getElementById("hA").value);
+      let h_E = parseFloat(document.getElementById("hE").value);
+      let h_R = parseFloat(document.getElementById("hR").value);
+      let h_X = parseFloat(document.getElementById("hX").value);
+      let h_C = parseFloat(document.getElementById("hC").value);
+      
+      // 結果記録用配列
+      let A_t = [], E_t = [], R_t = [], X_t = [], C_t = [], p_t = [], CPB_t = [];
+      // BPMカッコ内の各項目の記録用配列（w₀は除く：残り8項目）
+      let term2_t = [], term3_t = [], term4_t = [], term5_t = [],
+          term6_t = [], term7_t = [], term8_t = [], term9_t = [];
+      
+      let S_t = 1.0;  // 初期サバイバル確率
+      
+      // シミュレーションループ
+      for (let t = 0; t < T; t++) {
+        // FDM更新
+        A = A + alpha_A * A * (1 - A / A_max) + beta_AX * X * h_A - gamma_AC * (C / C_max) * A;
+        E = E + alpha_E * E * (1 - E / E_max) + beta_EA * A + beta_EA * h_E - gamma_EX * Math.max(0, 0.2 - X);
+        R = R + alpha_R * R * (1 - R / R_max) + beta_R_A * A - gamma_RC * Math.max(0, C - 0.7);
+        X = X + alpha_X * X * (1 - X / X_max) + beta_Xh * h_X + 0.01 * (C / C_max) * Math.max(0, A_crit - A);
+        C = C + alpha_C * C * (1 - C / C_max) + beta_Ch * h_C - gamma_CX * X * C;
+        
+        // BPM各項目の算出（w₀は計算するがグラフには表示しない）
+        let term1 = w_0;
+        let term2 = w_A * (1 - A / A_max);
+        let term3 = w_E * (1 - E / E_max);
+        let term4 = w_R * R;
+        let term5 = w_X * (1 - X / X_max);
+        let term6 = w_C * (C / C_max);
+        let term7 = w_AE * (A * E / (A_max * E_max));
+        let term8 = w_XC * (C / C_max) * (1 - X / X_max);
+        let term9 = w_th * (A < A_crit ? 1 : 0);
+        
+        // 記録（w₀はグラフには表示しないので除外）
+        term2_t.push(term2);
+        term3_t.push(term3);
+        term4_t.push(term4);
+        term5_t.push(term5);
+        term6_t.push(term6);
+        term7_t.push(term7);
+        term8_t.push(term8);
+        term9_t.push(term9);
+        
+        // BPM更新：各項目の和（w₀も含む）をシグモイドに入力
+        let sumTerms = term1 + term2 + term3 + term4 + term5 + term6 + term7 + term8 + term9;
+        let p = sigmoid(sumTerms);
+        
+        // CPB更新
+        S_t = S_t * (1 - p);
+        let CPB = 1 - S_t;
+        
+        // 各時刻のデータ記録
+        A_t.push(A);
+        E_t.push(E);
+        R_t.push(R);
+        X_t.push(X);
+        C_t.push(C);
+        p_t.push(p);
+        CPB_t.push(CPB);
+      }
+      
+      // 時系列軸の生成
+      let time = Array.from({length: T}, (_, i) => i);
+      
+      // --------------------------
+      // グラフの作成
+      // --------------------------
+      
+      // (1) AI要素の時系列推移グラフ
+      let traceA = { x: time, y: A_t, mode: 'lines', name: 'A (Alignment)', line: { dash: 'dash' } };
+      let traceE = { x: time, y: E_t, mode: 'lines', name: 'E (Ethics)', line: { dash: 'dash' } };
+      let traceR = { x: time, y: R_t, mode: 'lines', name: 'R (Rationality)', line: { dash: 'dash' } };
+      let traceX = { x: time, y: X_t, mode: 'lines', name: 'X (External Checks)', line: { dash: 'dash' } };
+      let traceC = { x: time, y: C_t, mode: 'lines', name: 'C (Capability)', line: { dash: 'dash' } };
+      
+      let data1 = [traceA, traceE, traceR, traceX, traceC];
+      let layout1 = {
+        title: 'AI要素の時系列推移',
+        xaxis: { title: 'Time (Months)' },
+        yaxis: { title: 'AI Factors (0-1)' }
+      };
+      Plotly.newPlot('plot1', data1, layout1);
+      
+      // (2) BPMカッコ内の8項目の時系列推移グラフ（w₀は除く）
+      let tracesTerms = [
+        { x: time, y: term2_t, mode: 'lines', name: 'w_A*(1-A/A_max)' },
+        { x: time, y: term3_t, mode: 'lines', name: 'w_E*(1-E/E_max)' },
+        { x: time, y: term4_t, mode: 'lines', name: 'w_R*R' },
+        { x: time, y: term5_t, mode: 'lines', name: 'w_X*(1-X/X_max)' },
+        { x: time, y: term6_t, mode: 'lines', name: 'w_C*(C/C_max)' },
+        { x: time, y: term7_t, mode: 'lines', name: 'w_AE*(A*E/(A_max*E_max))' },
+        { x: time, y: term8_t, mode: 'lines', name: 'w_XC*((C/C_max)*(1-X/X_max))' },
+        { x: time, y: term9_t, mode: 'lines', name: 'w_th*(A<A_crit?1:0)' }
+      ];
+      let layoutMid = {
+        title: 'BPMカッコ内（w₀除く）項目の推移',
+        xaxis: { title: 'Time (Months)' },
+        yaxis: { title: '各項目の値' }
+      };
+      Plotly.newPlot('plotMid', tracesTerms, layoutMid);
+      
+      // (3) 裏切り確率および累積確率グラフ（縦軸ログスケール）
+      let traceP = { x: time, y: p_t, mode: 'lines', name: 'p(t) (Betrayal Probability)' };
+      let traceCPB = { x: time, y: CPB_t, mode: 'lines', name: 'CPB(t) (Cumulative Probability)', line: { dash: 'dash' } };
+      
+      let data2 = [traceP, traceCPB];
+      let layout2 = {
+        title: '裏切り確率および累積確率の推移',
+        xaxis: { title: 'Time (Months)' },
+        yaxis: { title: 'Probability', type: 'log' }
+      };
+      Plotly.newPlot('plot2', data2, layout2);
+    }
+    
+    // ボタン押下でシミュレーション実行
+    document.getElementById("runSim").addEventListener("click", runSimulation);
+    // ページ読み込み時に初回シミュレーションを実行（任意）
+    window.onload = runSimulation;
+  </script>
+</body>
+</html>
